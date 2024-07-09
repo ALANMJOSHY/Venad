@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+{% include 'base.html' %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        .navbar2 {
+            display: flex;
+            align-items: center;
+            padding-left: 8px;
+        }
+        .financial-year {
+            font-size: 25px;
+            padding-top: 10px;
+            color: rgb(73, 73, 73);
+            margin-right: 700px; /* Adjust the margin
+            as needed */
+        }
+        .form-container {
+            background-color: white;
+            margin-top: 100px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            border: 2px solid #000;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-cancel {
+            background-color: #f44336;
+            color: white;
+        }
+        .btn-submit {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="page-wrapper">
+        <div class="header">
+          <div class="navbar2">
+              <p class="financial-year">Mark Attendance</p>
+                      <ol style="margin-right: 20px;" class="breadcrumb"><br>
+                    <li><i style="font-size: 10px; padding-top: 5px;"  class="fa fa-tachometer"></i><a href="/dashboard/"> &nbsp;&nbsp;Home</a></li>
+                    <li>Settings</li>
+                    <li class="active">Mark Attendance</li>
+                  </ol>
+            </div>
+        </div>
+
+        <div class="form-container">
+
+            <form action = "/overtime_edit_save/" method="post"> {% csrf_token %}
+                <div class="form-group">
+                    <label for="username">Employee Name</label>
+                    <select name = "emp_name" id="emp_name" class="waves-effect waves-dark">
+                        <option value = "{{ovr.employee.id}}">{{ovr.employee.name}}</option>
+                        {% for i in emp %}
+                        <option value = "{{i.id}}">{{i.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="Date">Date</label>
+                    <input type="date" class="form-control" name="date" >
+
+                </div>
+                <div class="form-group">
+                    <label for="Hours">Employee Name</label>
+                    <select name = "hours" id="hours" class="waves-effect waves-dark">
+                        <option value="{{ovr.hours}}">{{ovr.hours}}</option>
+
+                        <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+    <option value="6">6</option>
+    <option value="7">7</option>
+    <option value="8">8</option>
+    <option value="9">9</option>
+    <option value="10">10</option>
+    <option value="11">11</option>
+    <option value="12">12</option>
+                    </select>
+                </div>
+                <input type="hidden" name="id" id="id" value="{{ovr.id}}">
+                 <div class="form-group">
+                    <label for="amount">Amount</label>
+                     <input type="text" name = "amount" id="amount" value="{{ovr.amount}}" >
+                </div>
+                <div class="form-group text-right">
+                    <button type="button" class="btn btn-cancel" onclick="window.location.href='/dashboard/'">Cancel</button>
+                    <button type="submit" class="btn btn-submit">Submit</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+
+</body>
+</html>

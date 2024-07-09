@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .navbar2 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+        }
+        .financial-year {
+            font-size: 25px;
+            padding-top: 10px;
+            color: rgb(73, 73, 73);
+        }
+        .breadcrumb {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+        .breadcrumb li {
+            margin-left: 10px;
+        }
+        .breadcrumb a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .form-container {
+            background-color: white;
+            margin-top: 20px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            border: 2px solid #000;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-cancel {
+            background-color: #f44336;
+            color: white;
+        }
+        .btn-submit, .form-actions button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .btn-submit:hover, .form-actions button:hover {
+            background-color: #388E3C;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select {
+            width: calc(100% - 20px);
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-group input[readonly] {
+            background-color: #f0f0f0;
+            cursor: not-allowed;
+        }
+        .form-group input[type="date"] {
+            width: 100%;
+        }
+        .form-actions {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    {% include 'base.html' %}
+    <div id="page-wrapper">
+        <div class="header">
+            <div class="navbar2">
+                <p class="financial-year"></p>
+                <ol class="breadcrumb">
+                    <li><i style="font-size: 10px; padding-top: 5px;" class="fa fa-tachometer"></i><a href="/dashboard/">Home</a></li>
+                    <li>Settings</li>
+                    <li class="active">Mark Attendance</li>
+                </ol>
+            </div>
+        </div>
+        <div class="form-container">
+
+            <form action="/save_advance_payment/" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="employee-name">Employee Name</label>
+                    <select id="employee-name" name="employee-name" class="form-control" required>
+                        <option value="{{adv.id}}">{{adv.employee.name}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="basic-salary">Basic Salary</label>
+                    <input type="text" id="basic-salary" value="{{adv.employee.basic_salary}}" name="basic-salary" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="amount">Amount</label>
+                    <input type="text" id="amount" value="{{adv.amount}}"  name="amount" required>
+                </div>
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" value="{{ adv.date|date:"Y-m-d" }}" name="date" required>
+
+
+                </div>
+                <div class="form-group">
+                    <label for="remaining-balance">Remaining Balance</label>
+                    <input type="text" id="remaining-balance" value="{{adv.remainingbalence}}" name="remaining-balance" onclick="balanceCalulator()">
+                </div>
+                <div class="form-actions">
+                    <input type="hidden" id="ed" value="edit"  name="ed">
+                    <input type="hidden" id="id" value="{{adv.id}}"  name="id">
+                    <button type="submit">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+<script>
+    function balanceCalulator() {
+    // Get the values from the textboxes
+    var value1 = parseFloat(document.getElementById('basic-salary').value) || 0;
+    var value2 = parseFloat(document.getElementById('amount').value) || 0;
+
+    // Subtract the values
+    var result = value1 - value2;
+
+    document.getElementById('remaining-balance').value = result
+}
+</script>
+    <script>
+        // JavaScript to update the basic salary based on the selected employee
+        document.getElementById('employee-name').addEventListener('change', function() {
+            const employeeId = this.value;
+            if (employeeId) {
+                fetch(`/get_salary/${employeeId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('basic-salary').value = data.basic_salary;
+                    });
+            } else {
+                document.getElementById('basic-salary').value = '';
+            }
+        });
+    </script>
+<script>
+                            $(document).ready(function () {
+                                $('#employee-name').change(function () {
+                                    var selectedOption = $(this).val();
+                                    $.ajax({
+                                        url: '/your-url/', // Django view URL
+                                        type: 'POST',
+                                        data: {
+                                            'selected_option': selectedOption,
+                                            'csrfmiddlewaretoken': '{{ csrf_token }}' // CSRF token for security
+                                        },
+                                        success: function (response) {
+                                            document.getElementById("basic-salary").value = response.basic_sal;
+
+                                        },
+                                        error: function (xhr, errmsg, err) {
+                                            console.log('Error:', errmsg);
+                                        }
+                                    });
+                                });
+                            });
+                        </script>
+</body>
+</html>

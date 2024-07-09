@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+{% load static %}
+
+<head>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .heading-margin { margin-bottom: 20px; }
+        .btn-icon {
+            display: flex;
+            align-items: center;
+            font-size: 0.8em;
+            padding: 0.2rem 0.4rem;
+        }
+        .btn-icon i { margin-right: 3px; }
+        .navbar2 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f8f9fa;
+            padding: 10px 20px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .financial-year, .current-date { margin: 0; }
+        .breadcrumb { margin: 0; padding: 0; background: none; }
+        .breadcrumb li { display: inline; font-size: 12px; }
+        .breadcrumb li a { text-decoration: none; }
+        .add-button-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+        .custom-edit-button {
+            font-size: 0.8em;
+            padding: 0.2rem 0.4rem;
+        }
+        .custom-delete-button {
+            font-size: 0.8em;
+            padding: 0.2rem 0.4rem;
+            margin-left: 5px;
+        }
+        .custom-delete-button i { margin-right: 3px; }
+    </style>
+</head>
+<body>
+{% include 'base.html' %}
+
+<div id="page-wrapper">
+    <div class="header">
+        <div class="navbar2">
+            <p class="financial-year">Overtime Details</p>
+            <ol class="breadcrumb">
+                <li><i style="font-size: 10px; padding-top: 5px;" class="fa fa-tachometer"></i><a href="#"> &nbsp;&nbsp;Home</a></li>
+                <li class="active">Dashboard</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="container mt-5 position-relative">
+        <div class="add-button-container">
+            <a href="/overtimeadd/" class="btn btn-primary btn-icon">
+                <i class="fas fa-plus"></i> Add Overtime
+            </a>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="overtimeTable">
+                        <thead>
+                            <tr>
+                                <th>Sl No.</th>
+                                <th>Date</th>
+                                <th>Employee Name</th>
+                                <th>Hours</th>
+                                <th>Amount</th>
+                                <th>Edit/Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for overtime in overtimes %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ overtime.date }}</td>
+                                <td>{{ overtime.employee.name }}</td>
+                                <td>{{ overtime.hours }}</td>
+                                <td>{{ overtime.amount }}</td>
+                                <td>
+                                    <form method="post" action="#">
+                                        {% csrf_token %}
+                                        <a href='/overtime_edit_page/{{overtime.id}}'    class="btn btn-sm btn-primary btn-icon custom-edit-button">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="/delete_overtime/{{overtime.id}}" class="btn btn-sm btn-danger btn-icon custom-delete-button" onclick="return confirm('Do you want to delete this entry?');">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function() {
+        $('#overtimeTable').DataTable();
+    });
+</script>
+
+</body>
+</html>

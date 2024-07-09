@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Register</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+        }
+        .navbar2 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f8f9fa;
+            padding: 10px 20px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .breadcrumb {
+            margin: 0;
+            padding: 0;
+            background: none;
+        }
+        .breadcrumb li {
+            display: inline;
+            font-size: 12px;
+        }
+        .breadcrumb li a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        .breadcrumb li.active {
+            color: #6c757d;
+        }
+        .container {
+            padding: 20px;
+        }
+        .date-picker {
+            margin-bottom: 20px;
+        }
+        .table-responsive {
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        select {
+            width: 100%;
+            padding: 5px;
+        }
+        .buttons {
+            text-align: right;
+        }
+        .buttons button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .buttons button:hover {
+            opacity: 0.8;
+        }
+        .buttons .cancel {
+            background-color: #f44336;
+            color: white;
+        }
+        .buttons .save {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+        .action-buttons a {
+            display: inline-block;
+            padding: 8px 15px; /* Adjusted padding for slightly larger size */
+            border-radius: 5px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px; /* Adjusted font size for slightly larger size */
+        }
+        .btn-primary {
+            background-color: #007bff;
+        }
+        .btn-info {
+            background-color: #17a2b8;
+        }
+    </style>
+</head>
+<body>
+    {% include 'base.html' %}
+    <div id="page-wrapper">
+        <div class="header">
+            <div class="navbar2">
+                <p class="financial-year">Attendance Register</p>
+                <ol class="breadcrumb">
+                    <li><i class="fa fa-tachometer" style="font-size: 10px; padding-top: 5px;"></i><a href="#"> &nbsp;&nbsp;Home</a></li>
+                    <li class="active">Dashboard</li>
+                </ol>
+            </div>
+        </div>
+        <div class="container">
+            <div class="date-picker">
+                <label for="attendance-date">Date:</label>
+                <input type="date" id="attendance-date">
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered" id="attendance-table">
+                    <thead>
+                        <tr>
+                            <th>Sl No.</th>
+                            <th>Employee Name</th>
+                            <th>Employee ID</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for employee in att %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ employee.name }}</td>
+                            <td>{{ employee.employee_id }}</td>
+                            <td class="action-buttons">
+                                <a href="/mark_attendance/{{employee.id}}" class="btn-small btn-primary">Mark Attendance</a>
+                                <a href="/view_attendance/{{employee.id}}" class="btn-small btn-info">View</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="buttons">
+                <button class="cancel" onclick="cancelAttendance()">Cancel</button>
+                <button class="save" onclick="saveAttendance()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Initialize DataTables
+            $('#attendance-table').DataTable({
+                paging: false,
+                searching: false,
+                info: false
+            });
+
+            // Set default date to today
+            const dateInput = document.getElementById('attendance-date');
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
+        });
+
+        function cancelAttendance() {
+            // Reset attendance selections
+            const selects = document.querySelectorAll('#attendance-table select');
+            selects.forEach(select => select.value = 'PRESENT');
+            alert('Attendance marking canceled.');
+        }
+
+        function saveAttendance() {
+            const date = document.getElementById('attendance-date').value;
+            const attendance = Array.from(document.querySelectorAll('#attendance-table tbody tr')).map(row => {
+                const name = row.children[1].textContent;
+                const id = row.children[2].textContent;
+                const status = row.children[3].querySelector('select').value;
+                return { name, id, status };
+            });
+
+            console.log(`Attendance for ${date}:`, attendance);
+            alert('Attendance saved.');
+            // Add logic to save data to server or database
+        }
+    </script>
+</body>
+</html>
